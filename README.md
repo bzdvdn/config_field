@@ -44,11 +44,12 @@ class BookSerialzier(serializers.ModelSerializer):
     author_first_name = serializers.SerializerMethodField()
     author_last_name = serializers.SerializerMethodField()
     author_country = serializers.SerializerMethodField()
+    title = serializers.SerializerMethodField()
 
     class Meta:
         model = Book
         fields = (
-            'name',
+            'title',
             'description',
             'author_first_name',
             'author_last_name',
@@ -64,28 +65,38 @@ class BookSerialzier(serializers.ModelSerializer):
     def get_author_first_name(self, obj):
         if obj.author:
             return obj.name.split(' ')[0]
+        return 'none'
 
     
     def get_author_last_name(self, obj):
         if obj.author:
             return obj.name.split(' ')[1]
+        return 'none'
+            
+    def get_title(self, obj):
+        if obj.name:
+            return obj.name
+        return 'some book'
 
 
 # rewrite with ConfigSerializerMethodField
 class ConfigBookSerializer(serializers.ModelSerializer):
-    # get name field from modle author with splitting by " " and get 0 index
-    author_first_name = ConfigSerializerMethodField(relation_field='author', get_field='name', split_value=" ", split_index=0)
-    # get name field from modle author with splitting by " " and get 0 index
-    author_last_name = ConfigSerializerMethodField(relation_field='author', get_field='name', split_value=" ", split_index=1)
     author_country = ConfigSerializerMethodField(relation_field='author', get_field='county') # get author county field
-
     
+    # get name field from model author with splitting by " " and get 0 index
+    author_first_name = ConfigSerializerMethodField(relation_field='author', get_field='name', split_value=" ", split_index=0)
+    
+    # get name field from model author with splitting by " " and get 0 index
+    author_last_name = ConfigSerializerMethodField(relation_field='author', get_field='name', split_value=" ", split_index=1)
+    
+    # get same object's attributes and change default value('some book') or attribute key('title')
+    title = ConfigSerializerMethodField(get_field='name', default_value='some_book')
 ```
 
 # params
-* relation_field - relation field(author), can be None
-* get_field - object field, can't be None
-* split_value -  value for splitting ChaFields, can be None
+* relation_field - relation field(author), can be None, if not specified - refers to initial object
+* get_field - object's field, can't be None
+* split_value -  value for splitting CharFields, can be None
 * split_index -  index for split value, cant be None if split_value exists
 * allow_empty - default True
 * default_value - default 'none', if allow_empty=False, return default_value
