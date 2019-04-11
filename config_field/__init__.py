@@ -56,7 +56,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
 		try:
 			return splited[self.split_index]
 		except IndexError:
-			return value
+			return self.default_value
 
 	def to_representation(self, value):
 		return self.ensure_obj(value)
