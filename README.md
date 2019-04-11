@@ -1,19 +1,19 @@
 # config_field
 
 
-# Requirements
+## Requirements
 
 * Python (3.6, 3.7)
 * Django (1.11, 2.0, 2.1, 2.2)
 * Django Rest Framework >= 3.8.2
 
-# Installation
+## Installation
 
 Install using `pip`...
 
     pip install config_field
 
-# How to use
+## How to use
 
 ```python
 
@@ -38,8 +38,10 @@ Book.objects.create(name='Fisrt Book', description='some words', author=Author.o
 from rest_framework import serializers
 from config_field import ConfigSerializerMethodField
 from .models import Book
+```
 
-# default serializer with SerializerMethodField
+### default serializer with SerializerMethodField
+```
 class BookSerialzier(serializers.ModelSerializer):
     author_first_name = serializers.SerializerMethodField()
     author_last_name = serializers.SerializerMethodField()
@@ -51,6 +53,7 @@ class BookSerialzier(serializers.ModelSerializer):
         fields = (
             'title',
             'description',
+            'full_info',
             'author_first_name',
             'author_last_name',
             'author_country',
@@ -77,9 +80,15 @@ class BookSerialzier(serializers.ModelSerializer):
         if obj.name:
             return obj.name
         return 'some book'
+        
+    def get_full_info(self, obj):
+        if obj.name and obj.description:
+            return " ".join(obj.name, obj.description)
+        return 'none'
+```
 
-
-# rewrite with ConfigSerializerMethodField
+### rewrite with ConfigSerializerMethodField
+```
 class ConfigBookSerializer(serializers.ModelSerializer):
     author_country = ConfigSerializerMethodField(relation_field='author', get_field='county') # get author county field
     
@@ -89,11 +98,14 @@ class ConfigBookSerializer(serializers.ModelSerializer):
     # get name field from model author with splitting by " " and get 0 index
     author_last_name = ConfigSerializerMethodField(relation_field='author', get_field='name', split_value=" ", split_index=1)
     
-    # get same object's attributes and change default value('some book') or attribute key('title')
+    # get same object's attribute and change default value('some book') or attribute key('title')
     title = ConfigSerializerMethodField(get_field='name', default_value='some_book')
+    
+    # get same object's attributes and join them
+    full_info = ConfigSerializerMethodField(get_field=['name', 'description'])
 ```
 
-# params
+## params
 * relation_field - relation field(author), can be None, if not specified - refers to initial object
 * get_field - object's field, can't be None
 * split_value -  value for splitting CharFields, can be None
