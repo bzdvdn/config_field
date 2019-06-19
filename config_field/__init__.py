@@ -40,11 +40,11 @@ class ConfigSerializerMethodField(SerializerMethodField):
 		
 
 	def _create_dict_value(self, obj):
-		attr = ""
+		attr = None
 		if isinstance(self.get_field, str):
 			attr = obj.get(self.get_field)
 		elif isinstance(self.get_field, list):
-			values = [obj.get(field) for field in self.get_field]
+			values = [obj[field] for field in self.get_field if obj.get(field)]
 			attr = " ".join(str(v) for v in values if v)
 		if not attr and not self.allow_empty:
 			return self.default_value
@@ -56,7 +56,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
 
 
 	def _create_model_value(self, obj):
-		attr = ""
+		attr = None
 		if isinstance(self.get_field, str):
 			attr = getattr(obj, self.get_field)
 		elif isinstance(self.get_field, list):
@@ -77,6 +77,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
 			return splited[self.split_index]
 		except (TypeError, IndexError, ValueError):
 			return self.default_value
+
 
 	def to_representation(self, value):
 		return self.ensure_obj(value)
