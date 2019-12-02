@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='config_field',
-    version='0.0.9',
+    version='0.1',
     packages=find_packages(),
     author='bzdvdn',
     author_email='bzdv.dn@gmail.com',

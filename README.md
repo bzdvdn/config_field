@@ -112,3 +112,4 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 * split_index -  index for split value, cant be None if split_value exists
 * allow_empty - default True
 * default_value - default 'none', if allow_empty=False, return default_value
+* to_lower - if True and isinstance value = str, return value in lowercase

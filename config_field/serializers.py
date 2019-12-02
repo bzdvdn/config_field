@@ -13,7 +13,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
     """
 
     def __init__(self, method_name=None, relation_field=None, get_field=None, split_value=None, split_index=None,
-                 default_value='none', allow_empty=True, **kwargs):
+                 default_value='none', allow_empty=True, to_lower=False, **kwargs):
         self.method_name = method_name
         self.relation_field = relation_field
         self.get_field = get_field
@@ -21,6 +21,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
         self.split_value = split_value
         self.split_index = split_index
         self.allow_empty = allow_empty
+        self.to_lower = to_lower
         kwargs['source'] = '*'
         kwargs['read_only'] = True
         super(SerializerMethodField, self).__init__(**kwargs)
@@ -82,4 +83,5 @@ class ConfigSerializerMethodField(SerializerMethodField):
             return self.default_value
 
     def to_representation(self, value):
-        return self.ensure_obj(value)
+        data = self.ensure_obj(value)
+        return data.lower() if (isinstance(data, str) and self.to_lower) else data
