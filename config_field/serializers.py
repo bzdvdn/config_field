@@ -13,7 +13,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
     """
 
     def __init__(self, method_name=None, relation_field=None, get_field=None, split_value=None, split_index=None,
-                 default_value='none', allow_empty=True, to_lower=False, **kwargs):
+                 default_value='none', allow_empty=True, to_lower=False, to_capitalize=False, to_upper=False, **kwargs):
         self.method_name = method_name
         self.relation_field = relation_field
         self.get_field = get_field
@@ -22,6 +22,8 @@ class ConfigSerializerMethodField(SerializerMethodField):
         self.split_index = split_index
         self.allow_empty = allow_empty
         self.to_lower = to_lower
+        self.to_capitalize = to_capitalize
+        self.to_upper = to_upper
         kwargs['source'] = '*'
         kwargs['read_only'] = True
         super(SerializerMethodField, self).__init__(**kwargs)
@@ -80,8 +82,19 @@ class ConfigSerializerMethodField(SerializerMethodField):
         try:
             return splitted[self.split_index]
         except (TypeError, IndexError, ValueError):
-            return self.default_value
+            return self.default_value if not self.allow_empty else None
+
+    def _change_string(self, data: str) -> str:
+        if self.to_lower:
+            return data.lower()
+        elif self.to_capitalize:
+            return data.capitalize()
+        elif self.to_upper:
+            return data.upper()
+        return data
 
     def to_representation(self, value):
         data = self.ensure_obj(value)
-        return data.lower() if (isinstance(data, str) and self.to_lower) else data
+        if isinstance(data, str):
+            return self._change_string(data)
+        return data

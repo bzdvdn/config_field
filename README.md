@@ -113,3 +113,5 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 * allow_empty - default True
 * default_value - default 'none', if allow_empty=False, return default_value
 * to_lower - if True and isinstance value = str, return value in lowercase
+* to_capitalize - if True and isinstance value = str, return value in Capitalize
+* to_upper - if True and isinstance value = str, return value in uppercase
