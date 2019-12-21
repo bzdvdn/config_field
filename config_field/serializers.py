@@ -65,9 +65,9 @@ class ConfigSerializerMethodField(SerializerMethodField):
     def _create_model_value(self, obj):
         attr = None
         if isinstance(self.get_field, str):
-            attr = getattr(obj, self.get_field)
+            attr = getattr(obj, self.get_field, self.default_value)
         elif isinstance(self.get_field, list):
-            values = [getattr(obj, field) for field in self.get_field]
+            values = [getattr(obj, field, self.default_value) for field in self.get_field]
             attr = " ".join(str(v) for v in values if v)
         if not attr and not self.allow_empty:
             return self.default_value
