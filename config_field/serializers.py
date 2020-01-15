@@ -88,13 +88,13 @@ class ConfigSerializerMethodField(SerializerMethodField):
 
     def _change_string(self, data: str) -> str:
         if self.to_lower:
-            return data.lower()
+            data = data.lower()
         elif self.to_capitalize:
-            return data.capitalize()
+            data = data.capitalize()
         elif self.to_upper:
-            return data.upper()
+            data = data.upper()
         if self.to_strip:
-            return data.strip()
+            data = data.strip()
         return data
 
     def to_representation(self, value):
