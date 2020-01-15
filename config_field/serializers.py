@@ -51,6 +51,8 @@ class ConfigSerializerMethodField(SerializerMethodField):
 
     def _create_dict_value(self, obj):
         attr = None
+        if self.relation_field:
+            obj = obj[self.relation_field]
         if isinstance(self.get_field, str):
             attr = obj.get(self.get_field)
         elif isinstance(self.get_field, list):
