@@ -1,4 +1,5 @@
-from rest_framework.fields import SerializerMethodField
+from django.db import models
+from rest_framework.serializers import SerializerMethodField
 
 
 class ConfigSerializerMethodField(SerializerMethodField):
@@ -51,8 +52,8 @@ class ConfigSerializerMethodField(SerializerMethodField):
 
     def _create_dict_value(self, obj):
         attr = None
-        if self.relation_field:
-            obj = obj[self.relation_field]
+        if '.' in self.get_field:
+            return self.__split_by_pointer_value(obj)
         if isinstance(self.get_field, str):
             attr = obj.get(self.get_field)
         elif isinstance(self.get_field, list):
@@ -66,8 +67,33 @@ class ConfigSerializerMethodField(SerializerMethodField):
 
         return attr
 
+    def __parse_dict_value(self, field, obj):
+        attr = None
+        if isinstance(field, str):
+            attr = obj.get(field)
+        if not attr and not self.allow_empty:
+            return self.default_value
+
+        if self.split_value:
+            return self.get_split(attr)
+
+        return attr
+
+    def __split_by_pointer_value(self, obj):
+        attrs = self.get_field.split('.')
+        data = None
+        for attr in attrs:
+            if isinstance(data, dict):
+                obj = self.__parse_dict_value(attr, obj)
+            else:
+                obj = getattr(obj, attr)
+            data = obj
+        return data
+
     def _create_model_value(self, obj):
         attr = None
+        if '.' in self.get_field:
+            return self.__split_by_pointer_value(obj)
         if isinstance(self.get_field, str):
             attr = getattr(obj, self.get_field, self.default_value)
         elif isinstance(self.get_field, list):
