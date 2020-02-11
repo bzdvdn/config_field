@@ -106,12 +106,14 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 ```
 
 ## params
-* relation_field - relation field(author), can be None, if not specified - refers to initial object
+* relation_field - relation field(author), can be None, if not specified - refers to initial object(deprecated)
 * get_field - object's field, can't be None
 * split_value -  value for splitting CharFields, can be None
 * split_index -  index for split value, cant be None if split_value exists
-* allow_empty - default True
-* default_value - default 'none', if allow_empty=False, return default_value
+* allow_empty - Removed
+* default_value - removed
 * to_lower - if True and isinstance value = str, return value in lowercase
 * to_capitalize - if True and isinstance value = str, return value in Capitalize
 * to_upper - if True and isinstance value = str, return value in uppercase
+* default - default 'none', if allow_empty=False or allow_null=True, return default_value
+* allow_null - default False

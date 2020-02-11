@@ -1,8 +1,7 @@
-from django.db import models
-from rest_framework.serializers import SerializerMethodField
+from rest_framework.serializers import Field
 
 
-class ConfigSerializerMethodField(SerializerMethodField):
+class ConfigSerializerMethodField(Field):
     """
     class Book(models.Model):
         name = 'test'
@@ -13,28 +12,24 @@ class ConfigSerializerMethodField(SerializerMethodField):
         full_data = ConfigSerializerMethodField(relation_field='book', get_field=['name', 'desc']) (return "book_name": "test desc")
     """
 
-    def __init__(self, method_name=None, relation_field=None, get_field=None, split_value=None, split_index=None,
-                 default_value='none', allow_empty=True, to_lower=False, to_capitalize=False, to_upper=False,
-                 to_strip=False, **kwargs):
-        self.method_name = method_name
-        self.relation_field = relation_field
+    def __init__(self, relation_field=None, get_field=None, split_value=None, split_index=None, to_lower=False,
+                 to_capitalize=False, to_upper=False, to_strip=False, default='none', allow_null=False, ** kwargs):
+        self.relation_field = relation_field  # deprecated
         self.get_field = get_field
-        self.default_value = default_value
         self.split_value = split_value
         self.split_index = split_index
-        self.allow_empty = allow_empty
+        self.allow_null = allow_null
+        self.default = default
         self.to_lower = to_lower
         self.to_strip = to_strip
         self.to_capitalize = to_capitalize
         self.to_upper = to_upper
         kwargs['source'] = '*'
         kwargs['read_only'] = True
-        super(SerializerMethodField, self).__init__(**kwargs)
+        super(ConfigSerializerMethodField, self).__init__(**kwargs)
 
     def bind(self, field_name, parent):
-        if self.method_name is None and self.get_field is None:
-            self.method_name = field_name
-        super(SerializerMethodField, self).bind(field_name, parent)
+        super(ConfigSerializerMethodField, self).bind(field_name, parent)
 
     def ensure_obj(self, obj):
         if isinstance(obj, dict):
@@ -44,9 +39,9 @@ class ConfigSerializerMethodField(SerializerMethodField):
             try:
                 obj = getattr(obj, self.relation_field)
             except AttributeError:
-                return self.default_value
+                return self.default
         if not obj:
-            return self.default_value
+            return self.default
 
         return self._create_model_value(obj)
 
@@ -59,8 +54,8 @@ class ConfigSerializerMethodField(SerializerMethodField):
         elif isinstance(self.get_field, list):
             values = [obj[field] for field in self.get_field if obj.get(field)]
             attr = " ".join(str(v) for v in values if v)
-        if not attr and not self.allow_empty:
-            return self.default_value
+        if not attr and not self.allow_null:
+            return self.default
 
         if self.split_value:
             return self.get_split(attr)
@@ -71,8 +66,8 @@ class ConfigSerializerMethodField(SerializerMethodField):
         attr = None
         if isinstance(field, str):
             attr = obj.get(field)
-        if not attr and not self.allow_empty:
-            return self.default_value
+        if not attr and not self.allow_null:
+            return self.default
 
         if self.split_value:
             return self.get_split(attr)
@@ -95,12 +90,12 @@ class ConfigSerializerMethodField(SerializerMethodField):
         if '.' in self.get_field:
             return self.__split_by_pointer_value(obj)
         if isinstance(self.get_field, str):
-            attr = getattr(obj, self.get_field, self.default_value)
+            attr = getattr(obj, self.get_field, self.default)
         elif isinstance(self.get_field, list):
-            values = [getattr(obj, field, self.default_value) for field in self.get_field]
+            values = [getattr(obj, field, self.default) for field in self.get_field]
             attr = " ".join(str(v) for v in values if v)
-        if not attr and not self.allow_empty:
-            return self.default_value
+        if not attr and not self.allow_null:
+            return self.default
 
         if self.split_value:
             return self.get_split(attr)
@@ -112,7 +107,7 @@ class ConfigSerializerMethodField(SerializerMethodField):
         try:
             return splitted[self.split_index]
         except (TypeError, IndexError, ValueError):
-            return self.default_value if not self.allow_empty else None
+            return self.default if not self.allow_null else None
 
     def _change_string(self, data: str) -> str:
         if self.to_lower:

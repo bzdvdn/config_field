@@ -1,8 +1,9 @@
 from setuptools import setup, find_packages
+from .config_field import __version__
 
 setup(
     name='config_field',
-    version='0.2.0',
+    version=__version__,
     packages=find_packages(),
     author='bzdvdn',
     author_email='bzdv.dn@gmail.com',
