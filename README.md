@@ -110,10 +110,12 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 * get_field - object's field, can't be None
 * split_value -  value for splitting CharFields, can be None
 * split_index -  index for split value, cant be None if split_value exists
-* allow_empty - Removed
-* default_value - removed
 * to_lower - if True and isinstance value = str, return value in lowercase
 * to_capitalize - if True and isinstance value = str, return value in Capitalize
 * to_upper - if True and isinstance value = str, return value in uppercase
 * default - default 'none', if allow_empty=False or allow_null=True, return default_value
 * allow_null - default False
+
+
+## changelog
+* version 0.2.1 (remove allow_empty, default_value params, relatrion_field param - deprecated)
