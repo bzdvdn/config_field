@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from .config_field import __version__
+from config_field import __version__
 
 setup(
     name='config_field',
