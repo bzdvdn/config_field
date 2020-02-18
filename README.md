@@ -118,4 +118,5 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 
 
 ## changelog
+* version 0.2.2 fix not attr bug
 * version 0.2.1 (remove allow_empty, default_value params, relatrion_field param - deprecated)
