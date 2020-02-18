@@ -94,12 +94,11 @@ class ConfigSerializerMethodField(Field):
         elif isinstance(self.get_field, list):
             values = [getattr(obj, field, self.default) for field in self.get_field]
             attr = " ".join(str(v) for v in values if v)
-        if not attr and not self.allow_null:
+        if attr is None and not self.allow_null:
             return self.default
 
         if self.split_value:
             return self.get_split(attr)
-
         return attr
 
     def get_split(self, value):
