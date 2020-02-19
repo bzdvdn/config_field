@@ -112,11 +112,12 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 * split_index -  index for split value, cant be None if split_value exists
 * to_lower - if True and isinstance value = str, return value in lowercase
 * to_capitalize - if True and isinstance value = str, return value in Capitalize
-* to_upper - if True and isinstance value = str, return value in uppercase
-* default - default 'none', if allow_empty=False or allow_null=True, return default_value
+* to_upper - if True and isinstance value = str, return value in UPPERCASE
+* default - default 'none', if allow_empty=False or allow_null=True, return default value
 * allow_null - default False
 
 
 ## changelog
+* version 0.2.3 self.default to self.default_value
 * version 0.2.2 fix not attr bug
 * version 0.2.1 (remove allow_empty, default_value params, relatrion_field param - deprecated)
