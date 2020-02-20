@@ -81,7 +81,7 @@ class ConfigSerializerMethodField(Field):
             if isinstance(data, dict):
                 obj = self.__parse_dict_value(attr, obj)
             else:
-                obj = getattr(obj, attr)
+                obj = getattr(obj, attr, self.default_value)
             data = obj
         return data
 
