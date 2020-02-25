@@ -48,8 +48,8 @@ class ConfigSerializerMethodField(Field):
     def _create_dict_value(self, obj):
         attr = None
         if '.' in self.get_field:
-            return self.__split_by_pointer_value(obj)
-        if isinstance(self.get_field, str):
+            return self.__split_by_pointer_value(self.get_field, obj)
+        elif isinstance(self.get_field, str):
             attr = obj.get(self.get_field)
         elif isinstance(self.get_field, list):
             values = [obj[field] for field in self.get_field if obj.get(field)]
@@ -74,8 +74,8 @@ class ConfigSerializerMethodField(Field):
 
         return attr
 
-    def __split_by_pointer_value(self, obj):
-        attrs = self.get_field.split('.')
+    def __split_by_pointer_value(self, field, obj):
+        attrs = field.split('.')
         data = None
         for attr in attrs:
             if isinstance(data, dict):
@@ -88,11 +88,15 @@ class ConfigSerializerMethodField(Field):
     def _create_model_value(self, obj):
         attr = None
         if '.' in self.get_field:
-            return self.__split_by_pointer_value(obj)
+            return self.__split_by_pointer_value(self.get_field, obj)
         if isinstance(self.get_field, str):
-            attr = getattr(obj, self.get_field, self.default_value)
+            attr = getattr(obj, self.get_field, None)
         elif isinstance(self.get_field, list):
-            values = [getattr(obj, field, self.default_value) for field in self.get_field]
+            values = [
+                self.__split_by_pointer_value(field, obj)
+                if '.' in field else getattr(obj, field, None)
+                for field in self.get_field
+            ]
             attr = " ".join(str(v) for v in values if v)
         if attr is None and not self.allow_null:
             return self.default_value

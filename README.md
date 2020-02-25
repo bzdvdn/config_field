@@ -118,6 +118,7 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 
 
 ## changelog
+* version 0.2.5 support point(.) split if list get_field
 * version 0.2.3 self.default to self.default_value
 * version 0.2.2 fix not attr bug
-* version 0.2.1 (remove allow_empty, default_value params, relatrion_field param - deprecated)
+* version 0.2.1 (remove allow_empty, default_value params, relation_field param - deprecated)
