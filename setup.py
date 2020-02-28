@@ -8,4 +8,8 @@ setup(
     author='bzdvdn',
     author_email='bzdv.dn@gmail.com',
     url='https://github.com/bzdvdn/config_field',
+    install_requires=[
+        'Django>=2.2.7',
+        'djangorestframework>=3.8.2',
+    ]
 )
