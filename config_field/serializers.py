@@ -12,9 +12,8 @@ class ConfigSerializerMethodField(Field):
         full_data = ConfigSerializerMethodField(relation_field='book', get_field=['name', 'desc']) (return "book_name": "test desc")
     """
 
-    def __init__(self, relation_field=None, get_field=None, split_value=None, split_index=None, to_lower=False,
+    def __init__(self, get_field=None, split_value=None, split_index=None, to_lower=False,
                  to_capitalize=False, to_upper=False, to_strip=False, default='none', allow_null=False, ** kwargs):
-        self.relation_field = relation_field  # deprecated
         self.get_field = get_field
         self.split_value = split_value
         self.split_index = split_index
@@ -34,15 +33,6 @@ class ConfigSerializerMethodField(Field):
     def ensure_obj(self, obj):
         if isinstance(obj, dict):
             return self._create_dict_value(obj)
-
-        if self.relation_field:
-            try:
-                obj = getattr(obj, self.relation_field)
-            except AttributeError:
-                return self.default_value
-        if not obj:
-            return self.default_value
-
         return self._create_model_value(obj)
 
     def _create_dict_value(self, obj):
@@ -76,14 +66,12 @@ class ConfigSerializerMethodField(Field):
 
     def __split_by_pointer_value(self, field, obj):
         attrs = field.split('.')
-        data = None
         for attr in attrs:
-            if isinstance(data, dict):
+            if isinstance(obj, dict):
                 obj = self.__parse_dict_value(attr, obj)
             else:
                 obj = getattr(obj, attr, self.default_value)
-            data = obj
-        return data
+        return self.default_value if not obj and not self.allow_null else obj
 
     def _create_model_value(self, obj):
         attr = None

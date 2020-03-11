@@ -106,7 +106,6 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 ```
 
 ## params
-* relation_field - relation field(author), can be None, if not specified - refers to initial object(deprecated)
 * get_field - object's field, can't be None
 * split_value -  value for splitting CharFields, can be None
 * split_index -  index for split value, cant be None if split_value exists
@@ -118,6 +117,7 @@ class ConfigBookSerializer(serializers.ModelSerializer):
 
 
 ## changelog
+* version 0.2.9 fix dot parsing, remove relation_field
 * version 0.2.5 support point(.) split if list get_field
 * version 0.2.3 self.default to self.default_value
 * version 0.2.2 fix not attr bug
