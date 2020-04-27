@@ -8,12 +8,23 @@ class ConfigSerializerMethodField(Field):
         desc = 'desc'
 
     class ExampleSerializer(self):
-        book_name = ConfigSerializerMethodField(relation_field='book', get_field='name') (return "book_name": "test")
-        full_data = ConfigSerializerMethodField(relation_field='book', get_field=['name', 'desc']) (return "book_name": "test desc")
+        book_name = ConfigSerializerMethodField(relation_field='book', get_field='name') (return 'book_name': 'test')
+        full_data = ConfigSerializerMethodField(relation_field='book', get_field=['name', 'desc']) (return 'book_name': 'test desc')
     """
 
-    def __init__(self, get_field=None, split_value=None, split_index=None, to_lower=False,
-                 to_capitalize=False, to_upper=False, to_strip=False, default='none', allow_null=False, ** kwargs):
+    def __init__(
+        self,
+        get_field=None,
+        split_value=None,
+        split_index=None,
+        to_lower=False,
+        to_capitalize=False,
+        to_upper=False,
+        to_strip=False,
+        default='none',
+        allow_null=False,
+        **kwargs
+    ):
         self.get_field = get_field
         self.split_value = split_value
         self.split_index = split_index
@@ -39,11 +50,17 @@ class ConfigSerializerMethodField(Field):
         attr = None
         if '.' in self.get_field:
             return self.__split_by_pointer_value(self.get_field, obj)
+        if isinstance(self.get_field, list):
+            values = []
+            for field in self.get_field:
+                if '.' in field:
+                    values.append(self.__split_by_pointer(field, obj))
+                else:
+                    values.append(obj[field]) if obj.get('field') else None
+            attr = ' '.join(str(v) for v in values if v)
         elif isinstance(self.get_field, str):
             attr = obj.get(self.get_field)
-        elif isinstance(self.get_field, list):
-            values = [obj[field] for field in self.get_field if obj.get(field)]
-            attr = " ".join(str(v) for v in values if v)
+
         if attr is None and not self.allow_null:
             return self.default_value
 
@@ -82,10 +99,11 @@ class ConfigSerializerMethodField(Field):
         elif isinstance(self.get_field, list):
             values = [
                 self.__split_by_pointer_value(field, obj)
-                if '.' in field else getattr(obj, field, None)
+                if '.' in field
+                else getattr(obj, field, None)
                 for field in self.get_field
             ]
-            attr = " ".join(str(v) for v in values if v)
+            attr = ' '.join(str(v) for v in values if v)
         if attr is None and not self.allow_null:
             return self.default_value
 
