@@ -88,7 +88,10 @@ class ConfigSerializerMethodField(Field):
                 obj = self.__parse_dict_value(attr, obj)
             else:
                 obj = getattr(obj, attr, self.default_value)
-        return self.default_value if not obj and not self.allow_null else obj
+        return_data = self.default_value if not obj and not self.allow_null else obj
+        if self.split_value:
+            return self.get_split(return_data)
+        return return_data
 
     def _create_model_value(self, obj):
         attr = None
