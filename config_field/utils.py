@@ -5,6 +5,7 @@ REGEX_PATTERN_VALUES = [
     '\n',
     '\t',
     '\r',
+    '\\',
 ]
 
 
