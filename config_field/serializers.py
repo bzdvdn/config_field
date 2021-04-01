@@ -1,5 +1,7 @@
 from rest_framework.serializers import Field
 
+from .utils import remove_unacceptable_chars, REGEX_PATTERN_VALUES
+
 
 class ConfigSerializerMethodField(Field):
     """
@@ -23,6 +25,8 @@ class ConfigSerializerMethodField(Field):
         to_strip=False,
         default='none',
         allow_null=False,
+        remove_unacceptable_chars=False,
+        remove_pattern=REGEX_PATTERN_VALUES,
         **kwargs
     ):
         self.get_field = get_field
@@ -34,6 +38,8 @@ class ConfigSerializerMethodField(Field):
         self.to_strip = to_strip
         self.to_capitalize = to_capitalize
         self.to_upper = to_upper
+        self.remove_unacceptable_chars = remove_unacceptable_chars
+        self.remove_pattern = remove_pattern
         kwargs['source'] = '*'
         kwargs['read_only'] = True
         super(ConfigSerializerMethodField, self).__init__(**kwargs)
@@ -122,6 +128,10 @@ class ConfigSerializerMethodField(Field):
             return self.default_value if not self.allow_null else None
 
     def _change_string(self, data: str) -> str:
+        if self.remove_unacceptable_chars:
+            data = remove_unacceptable_chars(
+                data, self.remove_pattern, self.default_value
+            )
         if self.to_lower:
             data = data.lower()
         elif self.to_capitalize:
