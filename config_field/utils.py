@@ -3,9 +3,9 @@ from typing import Optional, Union
 
 REGEX_PATTERN_VALUES = [
     '\n',
+    '\\\\',
     '\t',
     '\r',
-    '\\',
 ]
 
 
@@ -14,7 +14,7 @@ def remove_unacceptable_chars(
     pattern_values: list = REGEX_PATTERN_VALUES,
     default_value: Optional[Union[str, int, list]] = 'none',
 ) -> str:
-    pattern = r'|'.join(f'{v}' for v in pattern_values)
+    pattern = r'|'.join(v for v in pattern_values)
     if value is None:
         return default_value
     value = sub(pattern, ' ', str(value)).strip()
