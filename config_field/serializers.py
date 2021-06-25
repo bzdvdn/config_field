@@ -140,7 +140,7 @@ class ConfigSerializerMethodField(Field):
             data = data.upper()
         if self.to_strip:
             data = data.strip()
-        return data
+        return data or self.default_value
 
     def to_representation(self, value):
         data = self.ensure_obj(value)
