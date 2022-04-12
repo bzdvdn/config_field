@@ -55,14 +55,19 @@ class ConfigSerializerMethodField(Field):
     def _create_dict_value(self, obj):
         attr = None
         if '.' in self.get_field:
-            return self.__split_by_pointer_value(self.get_field, obj)
+            return_data = self.__split_by_pointer_value(self.get_field, obj)
+            return (
+                return_data
+                if return_data is None and self.allow_null
+                else self.default_value
+            )
         if isinstance(self.get_field, list):
             values = []
             for field in self.get_field:
                 if '.' in field:
                     values.append(self.__split_by_pointer(field, obj))
                 else:
-                    values.append(obj[field]) if obj.get('field') else None
+                    values.append(obj[field]) if obj.get(field) else None
             attr = ' '.join(str(v) for v in values if v)
         elif isinstance(self.get_field, str):
             attr = obj.get(self.get_field)
@@ -94,7 +99,7 @@ class ConfigSerializerMethodField(Field):
                 obj = self.__parse_dict_value(attr, obj)
             else:
                 obj = getattr(obj, attr, self.default_value)
-        return_data = self.default_value if not obj and not self.allow_null else obj
+        return_data = obj
         if self.split_value:
             return self.get_split(return_data)
         return return_data
@@ -102,7 +107,12 @@ class ConfigSerializerMethodField(Field):
     def _create_model_value(self, obj):
         attr = None
         if '.' in self.get_field:
-            return self.__split_by_pointer_value(self.get_field, obj)
+            return_data = self.__split_by_pointer_value(self.get_field, obj)
+            return (
+                return_data
+                if return_data is None and self.allow_null
+                else self.default_value
+            )
         if isinstance(self.get_field, str):
             attr = getattr(obj, self.get_field, None)
         elif isinstance(self.get_field, list):
