@@ -57,9 +57,9 @@ class ConfigSerializerMethodField(Field):
         if '.' in self.get_field:
             return_data = self.__split_by_pointer_value(self.get_field, obj)
             return (
-                return_data
-                if return_data is None and self.allow_null
-                else self.default_value
+                self.default_value
+                if return_data is None and not self.allow_null
+                else return_data
             )
         if isinstance(self.get_field, list):
             values = []
@@ -109,9 +109,9 @@ class ConfigSerializerMethodField(Field):
         if '.' in self.get_field:
             return_data = self.__split_by_pointer_value(self.get_field, obj)
             return (
-                return_data
-                if return_data is None and self.allow_null
-                else self.default_value
+                self.default_value
+                if return_data is None and not self.allow_null
+                else return_data
             )
         if isinstance(self.get_field, str):
             attr = getattr(obj, self.get_field, None)
